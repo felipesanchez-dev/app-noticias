@@ -1,7 +1,11 @@
 import { View, StyleSheet, LayoutChangeEvent } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import TabBarButton from "@/components/TabBarButton";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { useState } from "react";
 import { Colors } from "@/constants/Colors";
 
@@ -14,24 +18,29 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       width: e.nativeEvent.layout.width,
     });
   };
-  
+
   const tabPositionX = useSharedValue(0);
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: tabPositionX.value }],
     };
   });
-  
+
   return (
     <View onLayout={onTabbarLayout} style={styles.tabbar}>
-      <Animated.View style={[animatedStyle, {
-        position: 'absolute',
-        backgroundColor: Colors.tint,
-        top: 52,
-        left: 34,
-        height: 8,
-        width: 40,
-      }]} />
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            position: "absolute",
+            backgroundColor: Colors.tint,
+            top: 52,
+            left: 34,
+            height: 8,
+            width: 40,
+          },
+        ]}
+      />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -44,8 +53,8 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         const onPress = () => {
           tabPositionX.value = withTiming(buttonWidth * index, {
             duration: 200,
-          }); 
-          
+          });
+
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
@@ -78,9 +87,9 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 
 const styles = StyleSheet.create({
   tabbar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingTop: 16,
-    paddingBottom:40,
+    paddingBottom: 40,
     backgroundColor: Colors.white,
-  }
-})
+  },
+});
