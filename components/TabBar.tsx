@@ -54,7 +54,6 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           tabPositionX.value = withTiming(buttonWidth * index, {
             duration: 200,
           });
-
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
