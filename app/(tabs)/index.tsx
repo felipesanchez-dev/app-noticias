@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -6,12 +6,15 @@ import Header from "@/components/Header";
 import SearchBar from "@/components/SearchBar";
 import { NewsDataType } from "@/types";
 import BreakingNews from "@/components/BreakingNews";
+import Categories from "@/components/Categories";
 
 type Props = {};
 
 const Page: React.FC<Props> = () => {
   const { top: safeTop } = useSafeAreaInsets();
   const [breakingNews, setBreakingNews] = useState<NewsDataType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     getBreakingNews();
   }, []);
@@ -25,14 +28,23 @@ const Page: React.FC<Props> = () => {
       }
     } catch (err: any) {
       console.error("Error", err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
-
+  const onCatChanged = (category: string) =>{
+    console.log("categoria", category)
+  }
   return (
     <View style={[styles.container, { paddingTop: safeTop }]}>
       <Header />
       <SearchBar />
-      <BreakingNews newList={breakingNews} />
+      {isLoading ? (
+        <ActivityIndicator size={"large"} />
+      ) : (
+        <BreakingNews newList={breakingNews} />
+      )}
+      <Categories onCategoryChanged={onCatChanged}/>
     </View>
   );
 };

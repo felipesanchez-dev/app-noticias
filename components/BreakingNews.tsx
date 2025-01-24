@@ -41,7 +41,9 @@ const BreakingNews = ({ newList }: Props) => {
   }) => {
     if (viewableItems.length > 0 && viewableItems[0].index !== undefined) {
       // console.log("Visible item index:", viewableItems[0].index); //Test slider item
-      setPaginationIndex(viewableItems[0].index);
+      if (viewableItems[0].index !== null) {
+        setPaginationIndex(viewableItems[0].index);
+      }
     }
   };
 

@@ -18,7 +18,7 @@ type Props = {
 
 const { width } = Dimensions.get("screen");
 const ITEM_WIDTH = width * 0.8;
-const SPACING = (width - ITEM_WIDTH) / 1;
+const SPACING = (width - ITEM_WIDTH) / 1.1;
 
 const SliderItem = ({ sliderItem, index, scrollX }: Props) => {
   const rnStyle = useAnimatedStyle(() => {
@@ -28,7 +28,7 @@ const SliderItem = ({ sliderItem, index, scrollX }: Props) => {
           translateX: interpolate(
             scrollX.value,
             [(index - 1) * width, index * width, (index + 1) * width],
-            [-SPACING, 0, SPACING],
+            [-SPACING, 10, SPACING],
             Extrapolation.CLAMP
           ),
         },

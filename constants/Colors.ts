@@ -1,6 +1,6 @@
 export const Colors = {
   background: '#F4F4F4',
-  tint: '#FF4C4C',
+  tint: '#4682B4',
   tabIconDefault: '#687076',
   tabIconSelected: '#FF4C4C',
   white: '#fff',
