@@ -24,7 +24,7 @@ const Page: React.FC<Props> = () => {
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      // Llama ambas APIs de manera paralela para optimizar
+      // Llamada ambas APIs de manera paralela
       const [breakingNewsResponse, generalNewsResponse] = await Promise.all([
         axios.get(
           `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=5`
@@ -33,7 +33,7 @@ const Page: React.FC<Props> = () => {
           `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=10`
         ),
       ]);
-      // Verifica si los datos son válidos antes de asignarlos
+      // Verificacion si los datos son válidos
       if (breakingNewsResponse && breakingNewsResponse.data) {
         setBreakingNews(breakingNewsResponse.data.results);
       }

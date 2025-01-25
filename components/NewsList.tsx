@@ -32,7 +32,7 @@ export default NewsList;
 const styles = StyleSheet.create({
     container: {
         marginHorizontal: 20,
-        marginBottom: 50,
+        marginBottom: 40,
     },
     itemContainer: {
         flexDirection: 'row',
