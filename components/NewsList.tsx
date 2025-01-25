@@ -2,7 +2,7 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { NewsDataType } from '@/types';
 import { Colors } from '@/constants/Colors';
-import Loading from './Loading';
+import Loading from '@/components/Loading';
 
 type Props = {
     newList: NewsDataType[];
