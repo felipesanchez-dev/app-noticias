@@ -7,7 +7,6 @@ type Props = {
     onCategoryChanged: (category: string) => void;
 }
 
-
 const Categories = ({onCategoryChanged}: Props) => {
     const scrollRef = useRef<ScrollView>(null)
     const itemRef = useRef<TouchableOpacity[] | null[]>([]);
