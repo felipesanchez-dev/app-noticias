@@ -8,6 +8,7 @@ import { NewsDataType } from "@/types";
 import BreakingNews from "@/components/BreakingNews";
 import Categories from "@/components/Categories";
 import NewsList from "@/components/NewsList";
+import Loading from "@/components/Loading";
 
 type Props = {};
 
@@ -56,7 +57,7 @@ const Page: React.FC<Props> = () => {
       <Header />
       <SearchBar />
       {isLoading ? (
-        <ActivityIndicator size={"large"} />
+        <Loading size={"large"} />
       ) : (
         <>
           <BreakingNews newList={breakingNews} />

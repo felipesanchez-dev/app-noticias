@@ -1,29 +1,34 @@
-import { Image, StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { Image, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 import { NewsDataType } from '@/types';
 import { Colors } from '@/constants/Colors';
+import Loading from './Loading';
 
 type Props = {
-    newList: NewsDataType[]
-}
+    newList: NewsDataType[];
+};
 
-const NewsList = ({newList}: Props) => {
+const NewsList = ({ newList }: Props) => {
     return (
-    <View style={styles.container}>
-        {newList.map((item, index) => (
-            <View key={index} style={styles.itemContainer}>
-                <Image source={{uri: item.image_url}} style={styles.itemImage}/>
-                <View style={styles.itemInfo}>
-                    <Text style={styles.itemCategory}>{item.category}</Text>
-                    <Text style={styles.itemTitle}>{item.title}</Text>
-                    <View style={styles.itemSourceInfo}>
-                        <Image source={{uri: item.source_icon}} style={styles.itemSourceImg}/>
-                        <Text style={styles.itemSourceName}>{item.source_name}</Text>
+        <View style={styles.container}>
+            {newList.length === 0 ? (
+                <Loading size={"large"} />
+            ) : (
+                newList.map((item, index) => (
+                    <View key={index} style={styles.itemContainer}>
+                        <Image source={{ uri: item.image_url }} style={styles.itemImage} />
+                        <View style={styles.itemInfo}>
+                            <Text style={styles.itemCategory}>{item.category}</Text>
+                            <Text style={styles.itemTitle}>{item.title}</Text>
+                            <View style={styles.itemSourceInfo}>
+                                <Image source={{ uri: item.source_icon }} style={styles.itemSourceImg} />
+                                <Text style={styles.itemSourceName}>{item.source_name}</Text>
+                            </View>
+                        </View>
                     </View>
-                </View>
-            </View>
-        ))}
-    </View>
+                ))
+            )}
+        </View>
     );
 };
 
@@ -77,4 +82,4 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: Colors.darkGrey,
     },
-})
+});
