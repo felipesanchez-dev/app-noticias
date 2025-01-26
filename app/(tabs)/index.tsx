@@ -1,4 +1,4 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, } from "react-native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -25,7 +25,7 @@ const Page: React.FC<Props> = () => {
   const fetchNews = async () => {
     try {
       setIsLoading(true);
-      // Llamada ambas APIs de manera paralela
+      // Llamada a ambas APIs de manera paralela
       const [breakingNewsResponse, generalNewsResponse] = await Promise.all([
         axios.get(
           `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=5`
@@ -34,7 +34,7 @@ const Page: React.FC<Props> = () => {
           `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=10`
         ),
       ]);
-      // Verificacion si los datos son válidos
+      // Verificación si los datos son válidos
       if (breakingNewsResponse && breakingNewsResponse.data) {
         setBreakingNews(breakingNewsResponse.data.results);
       }
@@ -48,10 +48,25 @@ const Page: React.FC<Props> = () => {
     }
   };
 
-  const onCatChanged = (category: string) => {
-    console.log("Categoría seleccionada:", category);
+  const getNews = async (category: string = "") => {
+    try {
+      const categoryString = category.length !== 0 ? `&category=${category}` : "";
+      const URL = `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=10${categoryString}`;
+      const response = await axios.get(URL);
+      if (response && response.data) {
+        setNews(response.data.results);
+      }
+    } catch (err: any) {
+      console.error("Error al obtener las noticias de la categoría:", err.message);
+    }
   };
 
+  const onCatChanged = (category: string) => {
+    // Llamada a getNews con la categoría seleccionada
+    getNews(category);
+  };
+
+  
   return (
     <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
       <Header />
