@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,35 +16,43 @@ const Page: React.FC<Props> = () => {
   const { top: safeTop } = useSafeAreaInsets();
   const [breakingNews, setBreakingNews] = useState<NewsDataType[]>([]);
   const [news, setNews] = useState<NewsDataType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingBreaking, setIsLoadingBreaking] = useState(true);
+  const [isLoadingGeneral, setIsLoadingGeneral] = useState(true);
 
   useEffect(() => {
-    fetchNews();
+    fetchBreakingNews(); // Primero obtenemos las noticias de urgencia
   }, []);
 
-  const fetchNews = async () => {
+  const fetchBreakingNews = async () => {
     try {
-      setIsLoading(true);
-      // Llamada a ambas APIs de manera paralela
-      const [breakingNewsResponse, generalNewsResponse] = await Promise.all([
-        axios.get(
-          `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=5`
-        ),
-        axios.get(
-          `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=10`
-        ),
-      ]);
-      // Verificación si los datos son válidos
+      setIsLoadingBreaking(true);
+      const breakingNewsResponse = await axios.get(
+        `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=5`
+      );
       if (breakingNewsResponse && breakingNewsResponse.data) {
         setBreakingNews(breakingNewsResponse.data.results);
       }
+    } catch (err: any) {
+      console.error("Error al obtener las noticias de urgencia:", err.message);
+    } finally {
+      setIsLoadingBreaking(false);
+      fetchGeneralNews(); // Después de obtener las noticias de urgencia, obtenemos las generales
+    }
+  };
+
+  const fetchGeneralNews = async () => {
+    try {
+      setIsLoadingGeneral(true);
+      const generalNewsResponse = await axios.get(
+        `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&language=es&image=1&removeduplicate=1&size=10`
+      );
       if (generalNewsResponse && generalNewsResponse.data) {
         setNews(generalNewsResponse.data.results);
       }
     } catch (err: any) {
-      console.error("Error al obtener las noticias:", err.message);
+      console.error("Error al obtener las noticias generales:", err.message);
     } finally {
-      setIsLoading(false);
+      setIsLoadingGeneral(false);
     }
   };
 
@@ -66,16 +74,15 @@ const Page: React.FC<Props> = () => {
     getNews(category);
   };
 
-  
   return (
     <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
       <Header />
       <SearchBar />
-      {isLoading ? (
+      {isLoadingBreaking || isLoadingGeneral ? (
         <Loading size={"large"} />
       ) : (
         <>
-          <BreakingNews newList={breakingNews} />
+          <BreakingNews newList={breakingNews.filter(item => item.image_url !== null)}/>
           <Categories onCategoryChanged={onCatChanged} />
           <NewsList newList={news} />
         </>
