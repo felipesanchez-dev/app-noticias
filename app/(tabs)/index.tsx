@@ -77,7 +77,7 @@ const Page: React.FC<Props> = () => {
   return (
     <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
       <Header />
-      <SearchBar />
+      <SearchBar withHorizontalPadding={true}/>
       {isLoadingBreaking || isLoadingGeneral ? (
         <Loading size={"large"} />
       ) : (
