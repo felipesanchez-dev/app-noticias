@@ -5,12 +5,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
 import CheckBox from '@/components/CheckBox'
 import { useNewsCategories } from '@/hooks/useNewsCategories'
+import { useNewsCountries } from '@/hooks/useNewsCountry'
 
 type Props = {}
 
 const Page = (props: Props) => {
   const { top: safetop } = useSafeAreaInsets();
   const { newsCategories, toggleNewsCategory } = useNewsCategories();
+  const { newsCountries, toggleNewsCountry } = useNewsCountries();
   return (
     <View style={[styles.container, 
     {paddingTop: safetop + 20}]}>
@@ -24,6 +26,19 @@ const Page = (props: Props) => {
           checked={item.selected}
           onPress={() => {
             toggleNewsCategory(item.id);
+          }}
+          />
+        ))}
+      </View>
+      <Text style={styles.title}>Paises</Text>
+      <View style={styles.listContainer}>
+        {newsCountries.map((item, index) => (
+          <CheckBox 
+          key={index} 
+          label={item.name} 
+          checked={item.selected}
+          onPress={() => {
+            toggleNewsCountry(index);
           }}
           />
         ))}
