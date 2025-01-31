@@ -3,7 +3,6 @@ import React from 'react'
 import SearchBar from "@/components/SearchBar"
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
-import newsCategoryList from '@/constants/Categories'
 import CheckBox from '@/components/CheckBox'
 import { useNewsCategories } from '@/hooks/useNewsCategories'
 
@@ -30,8 +29,8 @@ const Page = (props: Props) => {
         ))}
       </View>
     </View>
-  )
-}
+  );
+};
 
 export default Page
 
@@ -53,4 +52,4 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 12,
   },
-})
+});
