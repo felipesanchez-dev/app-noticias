@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import SearchBar from "@/components/SearchBar"
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -43,6 +43,9 @@ const Page = (props: Props) => {
           />
         ))}
       </View>
+      <TouchableOpacity style={styles.searchBtn} >
+        <Text style={styles.searchText}>Buscar</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -67,4 +70,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 12,
   },
+  searchBtn: {
+
+  },
+  searchText: {
+    
+  }
 });
