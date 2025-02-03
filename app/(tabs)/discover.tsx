@@ -6,6 +6,7 @@ import { Colors } from '@/constants/Colors'
 import CheckBox from '@/components/CheckBox'
 import { useNewsCategories } from '@/hooks/useNewsCategories'
 import { useNewsCountries } from '@/hooks/useNewsCountry'
+import { Link } from 'expo-router'
 
 type Props = {}
 
@@ -17,22 +18,20 @@ const Page = (props: Props) => {
   const [ category, setCategory ] = useState("");
   const [ country, setCountry ] = useState("");
 
-
   return (
-    <View style={[styles.container, 
-    {paddingTop: safetop + 20}]}>
+    <View style={[styles.container, { paddingTop: safetop + 20 }]}>
       <SearchBar withHorizontalPadding={false} setSearchQuery={setSearchQuery} />
       <Text style={styles.title}>Categorias</Text>
       <View style={styles.listContainer}>
         {newsCategories.map((item) => (
           <CheckBox 
-          key={item.id} 
-          label={item.title} 
-          checked={item.selected}
-          onPress={() => {
-            toggleNewsCategory(item.id);
-            setCategory(item.slug);
-          }}
+            key={item.id} 
+            label={item.title} 
+            checked={item.selected}
+            onPress={() => {
+              toggleNewsCategory(item.id);
+              setCategory(item.slug);
+            }}
           />
         ))}
       </View>
@@ -40,18 +39,27 @@ const Page = (props: Props) => {
       <View style={styles.listContainer}>
         {newsCountries.map((item, index) => (
           <CheckBox 
-          key={index} 
-          label={item.name} 
-          checked={item.selected}
-          onPress={() => {
-            toggleNewsCountry(index);
-          }}
+            key={index} 
+            label={item.name} 
+            checked={item.selected}
+            onPress={() => {
+              toggleNewsCountry(index);
+              setCountry(item.code);
+            }}
           />
         ))}
       </View>
-      <TouchableOpacity style={styles.searchBtn} >
-        <Text style={styles.searchText}>Buscar</Text>
-      </TouchableOpacity>
+      <Link
+        href={{
+          pathname: `/news/search`,
+          params: { query: searchQuery, category, country },
+        }}
+        asChild
+      >
+        <TouchableOpacity style={styles.searchBtn}>
+          <Text style={styles.searchText}>Buscar</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 };
