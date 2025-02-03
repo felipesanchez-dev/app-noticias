@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import SearchBar from "@/components/SearchBar"
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
@@ -13,10 +13,15 @@ const Page = (props: Props) => {
   const { top: safetop } = useSafeAreaInsets();
   const { newsCategories, toggleNewsCategory } = useNewsCategories();
   const { newsCountries, toggleNewsCountry } = useNewsCountries();
+  const [ searchQuery, setSearchQuery ] = useState("");
+  const [ category, setCategory ] = useState("");
+  const [ country, setCountry ] = useState("");
+
+
   return (
     <View style={[styles.container, 
     {paddingTop: safetop + 20}]}>
-      <SearchBar withHorizontalPadding={false} />
+      <SearchBar withHorizontalPadding={false} setSearchQuery={setSearchQuery} />
       <Text style={styles.title}>Categorias</Text>
       <View style={styles.listContainer}>
         {newsCategories.map((item) => (
@@ -26,6 +31,7 @@ const Page = (props: Props) => {
           checked={item.selected}
           onPress={() => {
             toggleNewsCategory(item.id);
+            setCategory(item.slug);
           }}
           />
         ))}
@@ -71,9 +77,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   searchBtn: {
-
+    backgroundColor: Colors.tint,
+    alignItems: "center",
+    padding: 14,
+    borderRadius: 20,
+    marginVertical: 10
   },
   searchText: {
-    
+    color: Colors.white,
+    fontSize: 16,
+    fontWeight: "600",
   }
 });
