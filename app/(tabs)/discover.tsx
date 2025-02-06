@@ -53,8 +53,7 @@ const Page = (props: Props) => {
         href={{
           pathname: `/news/search`,
           params: { query: searchQuery, category, country },
-        }}
-        asChild
+        }}asChild
       >
         <TouchableOpacity style={styles.searchBtn}>
           <Text style={styles.searchText}>Buscar</Text>
