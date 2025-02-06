@@ -1,6 +1,6 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { router, Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { NewsDataType } from '@/types';
@@ -12,6 +12,7 @@ const NewsDetails = () => {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [news, setNews] = useState<NewsDataType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigation = useNavigation();
 
     useEffect(() => {
         getNews();
@@ -30,21 +31,28 @@ const NewsDetails = () => {
         }
     };
 
+    // Configura el header con un título estático que indique "Detalle de la noticia"
+    useLayoutEffect(() => {
+        navigation.setOptions({
+        title: 'Detalle de la noticia',
+        headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={25} />
+            </TouchableOpacity>
+        ),
+        headerRight: () => (
+            <TouchableOpacity onPress={() => console.log('Like')}>
+            <Ionicons name="heart-outline" size={25} />
+            </TouchableOpacity>
+        ),
+        });
+    }, [navigation]);
+
     return (
         <>
         <Stack.Screen
             options={{
-            headerLeft: () => (
-                <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={25} />
-                </TouchableOpacity>
-            ),
-            headerRight: () => (
-                <TouchableOpacity onPress={() => console.log('Like')}>
-                <Ionicons name="heart-outline" size={25} />
-                </TouchableOpacity>
-            ),
-            title: '',
+            title: '  Detalle de la noticia',
             }}
         />
         {isLoading ? (
@@ -53,7 +61,9 @@ const NewsDetails = () => {
             <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
             <Text style={styles.title}>{news[0].title}</Text>
             <View style={styles.newsInfoWrapper}>
-                <Text style={styles.newsInfo}>{Moment(news[0].pubDate).format("MMMM DD, hh:mm a")}</Text>
+                <Text style={styles.newsInfo}>
+                {Moment(news[0].pubDate).format("MMMM DD, hh:mm a")}
+                </Text>
                 <Text style={styles.newsInfo}>{news[0].source_name}</Text>
             </View>
             <Image source={{ uri: news[0].image_url }} style={styles.newsImg} />
@@ -66,11 +76,11 @@ const NewsDetails = () => {
         )}
         </>
     );
-    };
+};
 
-    export default NewsDetails;
+export default NewsDetails;
 
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.white,
