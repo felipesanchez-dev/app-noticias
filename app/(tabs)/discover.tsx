@@ -1,27 +1,33 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import SearchBar from "@/components/SearchBar"
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Colors } from '@/constants/Colors'
-import CheckBox from '@/components/CheckBox'
-import { useNewsCategories } from '@/hooks/useNewsCategories'
-import { useNewsCountries } from '@/hooks/useNewsCountry'
-import { Link } from 'expo-router'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import SearchBar from "@/components/SearchBar";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors } from '@/constants/Colors';
+import CheckBox from '@/components/CheckBox';
+import { useNewsCategories } from '@/hooks/useNewsCategories';
+import { useNewsCountries } from '@/hooks/useNewsCountry';
+import { Link } from 'expo-router';
 
-type Props = {}
-
-const Page = (props: Props) => {
+const Page = () => {
   const { top: safetop } = useSafeAreaInsets();
   const { newsCategories, toggleNewsCategory } = useNewsCategories();
   const { newsCountries, toggleNewsCountry } = useNewsCountries();
   const [ searchQuery, setSearchQuery ] = useState("");
-  const [ category, setCategory ] = useState("");
-  const [ country, setCountry ] = useState("");
+
+  // Se derivan las categorías y países seleccionados a partir de los hooks:
+  const selectedCategories = newsCategories
+    .filter(item => item.selected)
+    .map(item => item.slug);
+    
+  const selectedCountries = newsCountries
+    .filter(item => item.selected)
+    .map(item => item.code);
 
   return (
     <View style={[styles.container, { paddingTop: safetop + 20 }]}>
       <SearchBar withHorizontalPadding={false} setSearchQuery={setSearchQuery} />
-      <Text style={styles.title}>Categorias</Text>
+      
+      <Text style={styles.title}>Categorías</Text>
       <View style={styles.listContainer}>
         {newsCategories.map((item) => (
           <CheckBox 
@@ -30,12 +36,12 @@ const Page = (props: Props) => {
             checked={item.selected}
             onPress={() => {
               toggleNewsCategory(item.id);
-              setCategory(item.slug);
             }}
           />
         ))}
       </View>
-      <Text style={styles.title}>Paises</Text>
+
+      <Text style={styles.title}>Países</Text>
       <View style={styles.listContainer}>
         {newsCountries.map((item, index) => (
           <CheckBox 
@@ -44,16 +50,23 @@ const Page = (props: Props) => {
             checked={item.selected}
             onPress={() => {
               toggleNewsCountry(index);
-              setCountry(item.code);
             }}
           />
         ))}
       </View>
+
       <Link
         href={{
           pathname: `/news/search`,
-          params: { query: searchQuery, category, country },
-        }}asChild
+          // Se envían los parámetros: la query, y las categorías y países
+          // seleccionados convertidos a cadena separada por comas
+          params: { 
+            query: searchQuery, 
+            category: selectedCategories.join(','),
+            country: selectedCountries.join(',')
+          },
+        }}
+        asChild
       >
         <TouchableOpacity style={styles.searchBtn}>
           <Text style={styles.searchText}>Buscar</Text>
@@ -63,7 +76,7 @@ const Page = (props: Props) => {
   );
 };
 
-export default Page
+export default Page;
 
 const styles = StyleSheet.create({
   container: {
