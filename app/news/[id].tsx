@@ -36,18 +36,12 @@ const NewsDetails = () => {
     const saveBookmark = async (newsId: string) => {
         setBookmark(true);
         try {
-        const token = await AsyncStorage.getItem("bookmark");
-        if (token) {
-            const bookmarks = JSON.parse(token);
-            // Si ya existe la noticia no la agregamos
-            if (!bookmarks.includes(newsId)) {
+        const storedBookmarks = await AsyncStorage.getItem("bookmark");
+        const bookmarks = storedBookmarks ? JSON.parse(storedBookmarks) : [];
+        // Si la noticia no está ya guardada, se agrega
+        if (!bookmarks.includes(newsId)) {
             bookmarks.push(newsId);
             await AsyncStorage.setItem("bookmark", JSON.stringify(bookmarks));
-            alert("Noticia guardada con éxito");
-            }
-        } else {
-            const bookmarkArr = [newsId];
-            await AsyncStorage.setItem("bookmark", JSON.stringify(bookmarkArr));
             alert("Noticia guardada con éxito");
         }
         } catch (error) {
@@ -55,6 +49,20 @@ const NewsDetails = () => {
         }
     };
 
+    const removeBookmark = async (newsId: string) => {
+        setBookmark(false);
+        try {
+        const storedBookmarks = await AsyncStorage.getItem("bookmark");
+        if (storedBookmarks) {
+            const bookmarks = JSON.parse(storedBookmarks);
+            const updatedBookmarks = bookmarks.filter((id: string) => id !== newsId);
+            await AsyncStorage.setItem("bookmark", JSON.stringify(updatedBookmarks));
+            alert("Noticia eliminada de favoritos");
+        }
+        } catch (error) {
+        console.error("Error al eliminar el bookmark:", error);
+        }
+    };
 
     // Actualizamos el header cuando se carguen las noticias y/o cambie el estado del bookmark
     useLayoutEffect(() => {
@@ -68,9 +76,9 @@ const NewsDetails = () => {
         headerRight: () => (
             <TouchableOpacity
             onPress={() => {
-                // Solo se ejecuta si ya hay datos
                 if (news.length > 0) {
-                saveBookmark(news[0].article_id);
+                const articleId = news[0].article_id;
+                bookmark ? removeBookmark(articleId) : saveBookmark(articleId);
                 }
             }}
             disabled={news.length === 0} // Se deshabilita si aún no hay noticias
@@ -93,7 +101,7 @@ const NewsDetails = () => {
             }}
         />
         {isLoading ? (
-            <Loading size={"large"} />
+            <Loading size="large" />
         ) : (
             <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
             <Text style={styles.title}>{news[0].title}</Text>
