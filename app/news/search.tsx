@@ -3,6 +3,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useLocalSearchParams, useNavigation, Link } from 'expo-router';
 import { NewsDataType } from '@/types';
 import axios from 'axios';
+import { Colors } from '@/constants/Colors';
 
 const Page = () => {
   // Se reciben los parámetros de búsqueda
@@ -79,6 +80,7 @@ const Page = () => {
                     {item.description}
                     </Text>
                     <View style={styles.metaContainer}>
+                    <Image source={{ uri: item.source_icon }} style={styles.sourceIcon} />
                     <Text style={styles.newsSource}>{item.source_name}</Text>
                     <Text style={styles.newsDate}>
                         {new Date(item.pubDate).toLocaleDateString()}
@@ -143,7 +145,7 @@ const Page = () => {
     newsTitle: {
         fontSize: 18,
         fontWeight: '600',
-        marginBottom: 8,
+        marginBottom: 5,
         color: '#333',
     },
     newsDescription: {
@@ -156,8 +158,9 @@ const Page = () => {
         justifyContent: 'space-between',
     },
     newsSource: {
-        fontSize: 12,
-        color: '#999',
+        fontSize: 16,
+        color: Colors.black,
+        marginLeft: -190,
     },
     newsDate: {
         fontSize: 12,
@@ -173,5 +176,10 @@ const Page = () => {
         textAlign: 'center',
         marginTop: 30,
         color: '#333',
+    },
+    sourceIcon: {
+        width: 25,
+        height: 25,
+        borderRadius: 20,
     },
 });
