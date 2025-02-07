@@ -29,7 +29,7 @@ const Page = () => {
         try {
         /* Se construyen los parámetros de la query según lo recibido.
             Nota: si category o country contienen varias opciones separadas por comas,
-            se envían tal cual a la API (asegúrate de que la API las procese correctamente) */
+            se envían tal cual a la API */
         const queryString = query && query.length ? `&q=${query}` : "";
         const categoryString = category && category.length ? `&category=${category}` : "";
         const countryString = country && country.length ? `&country=${country}` : "";
