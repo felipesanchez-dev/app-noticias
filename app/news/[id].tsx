@@ -64,7 +64,10 @@ const NewsDetails = () => {
                 <Text style={styles.newsInfo}>
                 {Moment(news[0].pubDate).format("MMMM DD, hh:mm a")}
                 </Text>
-                <Text style={styles.newsInfo}>{news[0].source_name}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Image source={{ uri: news[0].source_icon }} style={styles.sourceIcon} />
+                    <Text style={[styles.newsInfo, { marginLeft: 5 }]}>{news[0].source_name}</Text>
+                </View>
             </View>
             <Image source={{ uri: news[0].image_url }} style={styles.newsImg} />
             {news[0].content ? (
@@ -104,9 +107,11 @@ const styles = StyleSheet.create({
     },
     newsInfoWrapper: {
         flexDirection: 'row',
+        alignItems: 'center', 
         justifyContent: 'space-between',
         marginBottom: 20,
     },
+    
     newsInfo: {
         fontSize: 13,
         color: Colors.darkGrey,
@@ -116,5 +121,10 @@ const styles = StyleSheet.create({
         color: "#555",
         letterSpacing: 0.8,
         lineHeight: 25,
+    },
+    sourceIcon: {
+        width: 25,
+        height: 25,
+        borderRadius: 20,
     },
 });
