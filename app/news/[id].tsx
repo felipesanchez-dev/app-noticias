@@ -175,47 +175,47 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     };
     export default NewsDetails;
 
-    const styles = StyleSheet.create({
-        container: {
+const styles = StyleSheet.create({
+    container: {
         flex: 1,
         backgroundColor: Colors.white,
-        },
-        contentContainer: {
+    },
+    contentContainer: {
         paddingHorizontal: 20,
         paddingBottom: 20,
-        },
-        title: {
+    },
+    title: {
         fontSize: 20,
         fontWeight: '600',
         color: Colors.black,
         marginVertical: 20,
         letterSpacing: 0.5,
-        },
-        newsImg: {
+    },
+    newsImg: {
         width: '100%',
         height: 300,
         marginBottom: 20,
         borderRadius: 10,
-        },
-        newsInfoWrapper: {
+    },
+    newsInfoWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginBottom: 20,
-        },
-        newsInfo: {
+    },
+    newsInfo: {
         fontSize: 13,
         color: Colors.darkGrey,
-        },
-        newsContent: {
+    },
+    newsContent: {
         fontSize: 16,
         color: '#555',
         letterSpacing: 0.8,
         lineHeight: 25,
-        },
-        sourceIcon: {
+    },
+    sourceIcon: {
         width: 25,
         height: 25,
         borderRadius: 20,
-        },
+    },
 });

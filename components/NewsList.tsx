@@ -7,6 +7,7 @@ import { Link } from 'expo-router';
 
 type Props = {
     newList: NewsDataType[];
+    item: any;
 };
 
 const NewsList = ({ newList }: Props) => {
