@@ -22,11 +22,13 @@ const Page = (props: Props) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchBookmark = async () => {
+    // Obtiene los IDs de las noticias guardadas en favoritos
     const token = await AsyncStorage.getItem("bookmark");
     if (token) {
       const res = JSON.parse(token);
       if (res) {
         let query_string = res.join(",");
+        // Llama a la API para obtener los detalles de las noticias guardadas
         const response = await axios.get(
           `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&id=${query_string}`
         );
@@ -41,7 +43,7 @@ const Page = (props: Props) => {
     setIsLoading(false);
   };
 
-  // Se vuelve a llamar a fetchBookmark cada vez que la pantalla se enfoca
+  // Se ejecuta cada vez que el usuario entra a esta pantalla
   useFocusEffect(
     useCallback(() => {
       fetchBookmark();
@@ -57,8 +59,10 @@ const Page = (props: Props) => {
       />
       <View style={styles.container}>
         {isLoading ? (
+          // Muestra el indicador de carga mientras se obtienen los datos
           <Loading size={"large"} />
         ) : (
+          // Muestra la lista de noticias guardadas
           <FlatList 
             data={bookmarkNews}
             keyExtractor={(_, index) => `list_item${index}`}
@@ -66,12 +70,15 @@ const Page = (props: Props) => {
             renderItem={({ item, index }) => (
               <Link href={`/news/${item.article_id}`} asChild key={index}>
                 <TouchableOpacity style={styles.card}>
+                  {/* Imagen de la noticia */}
                   <Image 
                     source={{ uri: item.image_url }} 
                     style={styles.cardImage} 
                     resizeMode="cover"
                   />
+                  {/* Título de la noticia */}
                   <Text style={styles.cardTitle}>{item.title}</Text>
+                  {/* Descripción corta de la noticia */}
                   <Text style={styles.cardDescription} numberOfLines={2}>
                     {item.description || item.content}
                   </Text>
