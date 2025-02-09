@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
   ActivityIndicator,
   FlatList,
   Image,
@@ -32,7 +31,7 @@ const Page = () => {
   const { top: safetop } = useSafeAreaInsets();
   const { newsCategories, toggleNewsCategory } = useNewsCategories();
   const { newsCountries, toggleNewsCountry } = useNewsCountries();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
   // Estados para obtener los IDs guardados de AsyncStorage
@@ -54,8 +53,8 @@ const Page = () => {
       const parsed: string[] = stored ? JSON.parse(stored) : [];
       setBookmarks(parsed);
     } catch (error: any) {
-      console.error("Error fetching bookmarks:", error);
-      setBookmarkError("No se pudieron obtener las noticias guardadas.");
+      console.error('Error fetching bookmarks:', error);
+      setBookmarkError('No se pudieron obtener las noticias guardadas.');
     } finally {
       setBookmarksLoading(false);
     }
@@ -71,12 +70,12 @@ const Page = () => {
 
   // Se derivan las categorías y países seleccionados a partir de los hooks:
   const selectedCategories = newsCategories
-    .filter(item => item.selected)
-    .map(item => item.slug);
+    .filter((item) => item.selected)
+    .map((item) => item.slug);
 
   const selectedCountries = newsCountries
-    .filter(item => item.selected)
-    .map(item => item.code);
+    .filter((item) => item.selected)
+    .map((item) => item.code);
 
   // Cuando se actualizan los IDs guardados, se consulta la API para obtener los detalles de cada noticia
   useEffect(() => {
@@ -95,8 +94,8 @@ const Page = () => {
         const news: NewsItem[] = response.data.results;
         setBookmarkNews(news);
       } catch (error: any) {
-        console.error("Error fetching bookmarked news:", error.message);
-        setNewsError("Error al obtener las noticias guardadas.");
+        console.error('Error fetching bookmarked news:', error.message);
+        setNewsError('Error al obtener las noticias guardadas.');
       } finally {
         setNewsLoading(false);
       }
@@ -105,16 +104,17 @@ const Page = () => {
     fetchBookmarkNews();
   }, [bookmarks]);
 
-  return (
-    <ScrollView style={[styles.container, { paddingTop: safetop + 20 }]}>
+  // Componente de cabecera para el FlatList (contenido estático)
+  const ListHeader = () => (
+    <>
       <SearchBar withHorizontalPadding={false} setSearchQuery={setSearchQuery} />
 
       <Text style={styles.title}>Categorías</Text>
       <View style={styles.listContainer}>
         {newsCategories.map((item) => (
-          <CheckBox 
-            key={item.id} 
-            label={item.title} 
+          <CheckBox
+            key={item.id}
+            label={item.title}
             checked={item.selected}
             onPress={() => toggleNewsCategory(item.id)}
           />
@@ -124,9 +124,9 @@ const Page = () => {
       <Text style={styles.title}>Países</Text>
       <View style={styles.listContainer}>
         {newsCountries.map((item, index) => (
-          <CheckBox 
-            key={index} 
-            label={item.name} 
+          <CheckBox
+            key={index}
+            label={item.name}
             checked={item.selected}
             onPress={() => toggleNewsCountry(index)}
           />
@@ -136,10 +136,10 @@ const Page = () => {
       <Link
         href={{
           pathname: `/news/search`,
-          params: { 
-            query: searchQuery, 
+          params: {
+            query: searchQuery,
             category: selectedCategories.join(','),
-            country: selectedCountries.join(',')
+            country: selectedCountries.join(','),
           },
         }}
         asChild
@@ -149,46 +149,55 @@ const Page = () => {
         </TouchableOpacity>
       </Link>
 
-      {/* Sección de noticias guardadas con estilo de tarjetas */}
-      <View style={styles.savedNewsContainer}>
-        <Text style={styles.title}>Noticias guardadas</Text>
-        {(bookmarksLoading || newsLoading) ? (
-          <ActivityIndicator size="large" color={Colors.tint} />
-        ) : (bookmarkError || newsError) ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{bookmarkError || newsError}</Text>
-            <TouchableOpacity style={styles.retryButton} onPress={fetchBookmarks}>
-              <Text style={styles.retryText}>Reintentar</Text>
-            </TouchableOpacity>
-          </View>
-        ) : bookmarkNews.length === 0 ? (
+      <Text style={styles.title}>Noticias guardadas</Text>
+
+      {(bookmarksLoading || newsLoading) && (
+        <ActivityIndicator size="large" color={Colors.tint} />
+      )}
+
+      {(bookmarkError || newsError) && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{bookmarkError || newsError}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchBookmarks}>
+            <Text style={styles.retryText}>Reintentar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {bookmarkNews.length === 0 &&
+        !(bookmarksLoading || newsLoading || bookmarkError || newsError) && (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyText}>No tienes noticias guardadas.</Text>
           </View>
-        ) : (
-          <FlatList 
-              data={bookmarkNews}
-              keyExtractor={(item) => item.article_id}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => (
-              <Link href={`/news/${item.article_id}`} asChild>
-              <TouchableOpacity style={styles.card}>
-              <Image 
-                source={{ uri: item.image_url }} 
-                  style={styles.cardImage} 
-                  resizeMode="cover"
-                />
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardDescription} numberOfLines={2}>
-                    {item.description || item.content}
-                </Text>
-                </TouchableOpacity>
-                </Link>
-            )}
-          />
         )}
-      </View>
-    </ScrollView>
+    </>
+  );
+
+  return (
+    <View style={[styles.container, { paddingTop: safetop + 20 }]}>
+      <FlatList
+        data={bookmarkNews}
+        keyExtractor={(item) => item.article_id}
+        showsVerticalScrollIndicator={false}
+        ListHeaderComponent={ListHeader}
+        renderItem={({ item }) => (
+          <Link href={`/news/${item.article_id}`} asChild>
+            <TouchableOpacity style={styles.card}>
+              <Image
+                source={{ uri: item.image_url }}
+                style={styles.cardImage}
+                resizeMode="cover"
+              />
+              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardDescription} numberOfLines={2}>
+                {item.description || item.content}
+              </Text>
+            </TouchableOpacity>
+          </Link>
+        )}
+        ListFooterComponent={<View style={{ height: 20 }} />}
+      />
+    </View>
   );
 };
 
@@ -202,21 +211,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "800",
+    fontWeight: '800',
     color: Colors.black,
     marginBottom: 10,
     marginTop: 20,
   },
   listContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 16,
     marginTop: 12,
     marginBottom: 12,
   },
   searchBtn: {
     backgroundColor: Colors.tint,
-    alignItems: "center",
+    alignItems: 'center',
     padding: 14,
     borderRadius: 20,
     marginVertical: 10,
@@ -224,7 +233,7 @@ const styles = StyleSheet.create({
   searchText: {
     color: Colors.white,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   savedNewsContainer: {
     marginTop: 30,
