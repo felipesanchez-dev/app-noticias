@@ -6,6 +6,7 @@ import { Link, Stack } from 'expo-router';
 import Loading from '@/components/Loading';
 import { Colors } from '@/constants/Colors';
 import { useFocusEffect } from '@react-navigation/native';
+import debounce from 'lodash/debounce';
 
 type NewsItem = {
   article_id: string;
@@ -46,10 +47,21 @@ const Page = () => {
     }
   }, []);
 
+  // Debounce para evitar llamadas frecuentes en cortos intervalos
+  const debouncedFetchBookmarks = useCallback(
+    debounce(() => {
+      fetchBookmarks();
+    }, 500),
+    [fetchBookmarks]
+  );
+
   useFocusEffect(
     useCallback(() => {
-      fetchBookmarks();
-    }, [fetchBookmarks])
+      debouncedFetchBookmarks();
+      return () => {
+        debouncedFetchBookmarks.cancel();
+      };
+    }, [debouncedFetchBookmarks])
   );
 
   return (
