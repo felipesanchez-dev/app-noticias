@@ -7,8 +7,6 @@ import Loading from '@/components/Loading';
 import { Colors } from '@/constants/Colors';
 import { useFocusEffect } from '@react-navigation/native';
 
-type Props = {};
-
 type NewsItem = {
   article_id: string;
   image_url: string;
@@ -17,37 +15,41 @@ type NewsItem = {
   content?: string;
 };
 
-const Page = (props: Props) => {
+const BOOKMARK_KEY = 'bookmark';
+
+const Page = () => {
   const [bookmarkNews, setBookmarkNews] = useState<NewsItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchBookmark = async () => {
-    // Obtiene los IDs de las noticias guardadas en favoritos
-    const token = await AsyncStorage.getItem("bookmark");
-    if (token) {
-      const res = JSON.parse(token);
-      if (res) {
-        let query_string = res.join(",");
-        // Llama a la API para obtener los detalles de las noticias guardadas
-        const response = await axios.get(
-          `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&id=${query_string}`
-        );
-        const news = response.data.results;
-        setBookmarkNews(news);
-      } else {
+  const fetchBookmarks = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = await AsyncStorage.getItem(BOOKMARK_KEY);
+      const ids: string[] = token ? JSON.parse(token) : [];
+      if (ids.length === 0) {
         setBookmarkNews([]);
+        return;
       }
-    } else {
-      setBookmarkNews([]);
+      const queryString = ids.join(',');
+      const response = await axios.get(
+        `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&id=${queryString}`
+      );
+      const news = response.data.results;
+      setBookmarkNews(news);
+    } catch (err: any) {
+      console.error('Error fetching bookmarked news:', err.message);
+      setError(err.message || 'Error desconocido');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  };
+  }, []);
 
-  // Se ejecuta cada vez que el usuario entra a esta pantalla
   useFocusEffect(
     useCallback(() => {
-      fetchBookmark();
-    }, [])
+      fetchBookmarks();
+    }, [fetchBookmarks])
   );
 
   return (
@@ -59,26 +61,32 @@ const Page = (props: Props) => {
       />
       <View style={styles.container}>
         {isLoading ? (
-          // Muestra el indicador de carga mientras se obtienen los datos
-          <Loading size={"large"} />
+          <Loading size="large" />
+        ) : error ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Error: {error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={fetchBookmarks}>
+              <Text style={styles.retryText}>Reintentar</Text>
+            </TouchableOpacity>
+          </View>
+        ) : bookmarkNews.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No tienes noticias guardadas.</Text>
+          </View>
         ) : (
-          // Muestra la lista de noticias guardadas
           <FlatList 
             data={bookmarkNews}
-            keyExtractor={(_, index) => `list_item${index}`}
+            keyExtractor={(item) => item.article_id}
             showsVerticalScrollIndicator={false}
-            renderItem={({ item, index }) => (
-              <Link href={`/news/${item.article_id}`} asChild key={index}>
+            renderItem={({ item }) => (
+              <Link href={`/news/${item.article_id}`} asChild>
                 <TouchableOpacity style={styles.card}>
-                  {/* Imagen de la noticia */}
                   <Image 
                     source={{ uri: item.image_url }} 
                     style={styles.cardImage} 
                     resizeMode="cover"
                   />
-                  {/* Título de la noticia */}
                   <Text style={styles.cardTitle}>{item.title}</Text>
-                  {/* Descripción corta de la noticia */}
                   <Text style={styles.cardDescription} numberOfLines={2}>
                     {item.description || item.content}
                   </Text>
@@ -126,5 +134,35 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 14,
     color: Colors.darkGrey,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: Colors.darkGrey,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: 'red',
+    marginBottom: 10,
+  },
+  retryButton: {
+    backgroundColor: Colors.black,
+    padding: 10,
+    borderRadius: 5,
+  },
+  retryText: {
+    color: Colors.white,
+    fontSize: 14,
   },
 });

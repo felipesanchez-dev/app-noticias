@@ -10,7 +10,10 @@ import Categories from "@/components/Categories";
 import NewsList from "@/components/NewsList";
 import Loading from "@/components/Loading";
 
-type Props = {};
+type Props = {
+    newList: NewsDataType[];
+    item?: any;
+};
 
 const Page: React.FC<Props> = () => {
   const { top: safeTop } = useSafeAreaInsets();
@@ -71,6 +74,7 @@ const Page: React.FC<Props> = () => {
 
   const onCatChanged = (category: string) => {
     // Llamada a getNews con la categoría seleccionada
+    // setNews([]);
     getNews(category);
   };
 
@@ -84,7 +88,7 @@ const Page: React.FC<Props> = () => {
         <>
           <BreakingNews newList={breakingNews.filter(item => item.image_url !== null)}/>
           <Categories onCategoryChanged={onCatChanged} />
-          <NewsList newList={news} />
+          <NewsList newList={news} item={null} />
         </>
       )}
     </ScrollView>

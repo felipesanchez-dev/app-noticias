@@ -24,8 +24,11 @@ const Page = () => {
 
     const [news, setNews] = useState<NewsDataType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const getNews = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
         /* Se construyen los parámetros de la query según lo recibido.
             Nota: si category o country contienen varias opciones separadas por comas,
@@ -40,6 +43,7 @@ const Page = () => {
         }
         } catch (err: any) {
         console.error("Error al obtener las noticias:", err.message);
+        setError(err.message || "Error desconocido");
         } finally {
         setIsLoading(false);
         }
@@ -54,6 +58,17 @@ const Page = () => {
         <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#000" />
         </View>
+        );
+    }
+
+    if (error) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>Error: {error}</Text>
+                <TouchableOpacity style={styles.retryButton} onPress={getNews}>
+                    <Text style={styles.retryText}>Reintentar</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 
@@ -124,6 +139,26 @@ const Page = () => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    errorText: {
+        fontSize: 16,
+        color: 'red',
+        marginBottom: 10,
+    },
+    retryButton: {
+        backgroundColor: Colors.black,
+        padding: 10,
+        borderRadius: 5,
+    },
+    retryText: {
+        color: Colors.white,
+        fontSize: 14,
     },
     newsCard: {
         backgroundColor: '#fff',

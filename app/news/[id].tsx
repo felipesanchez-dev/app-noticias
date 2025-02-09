@@ -1,18 +1,6 @@
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import {
-    router,
-    Stack,
-    useLocalSearchParams,
-    useNavigation,
-} from 'expo-router';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import { router, Stack, useLocalSearchParams, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { NewsDataType } from '@/types';
@@ -20,160 +8,162 @@ import Loading from '@/components/Loading';
 import { Colors } from '@/constants/Colors';
 import Moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-    
-    const NewsDetails = () => {
-        const { id } = useLocalSearchParams<{ id: string }>();
-        const [news, setNews] = useState<NewsDataType[]>([]);
-        const [isLoading, setIsLoading] = useState(true);
-        const navigation = useNavigation();
-        const [bookmark, setBookmark] = useState(false);
-    
-        useEffect(() => {
-        getNews();
-        }, []);
-    
-        // Una vez cargada la noticia, verificamos si ya está en favoritos
-        useEffect(() => {
-        if (!isLoading && news.length > 0) {
-            renderBookmark(news[0].article_id);
+
+const BOOKMARK_KEY = 'bookmark';
+
+const NewsDetails = () => {
+    const { id } = useLocalSearchParams<{ id: string }>();
+    const [news, setNews] = useState<NewsDataType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [bookmark, setBookmark] = useState(false);
+    const navigation = useNavigation();
+
+    const fetchNews = useCallback(async () => {
+        if (!id) {
+        setIsLoading(false);
+        return;
         }
-        }, [isLoading, news]);
-    
-        const getNews = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
-            const URL = `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&id=${id}`;
-            const response = await axios.get(URL);
-            if (response && response.data) {
+        const URL = `https://newsdata.io/api/1/news?apikey=${process.env.EXPO_PUBLIC_API_KEY}&id=${id}`;
+        const response = await axios.get(URL);
+        if (response?.data) {
             setNews(response.data.results);
-            setIsLoading(false);
-            }
+        }
         } catch (err: any) {
-            console.error('Error al obtener las noticias:', err.message);
+        console.error('Error al obtener las noticias:', err.message);
+        setError(err.message || 'Error desconocido');
+        } finally {
+        setIsLoading(false);
         }
-        };
-    
-        const saveBookmark = async (newsId: string) => {
+    }, [id]);
+
+    const getBookmarks = useCallback(async () => {
         try {
-            const storedBookmarks = await AsyncStorage.getItem('bookmark');
-            const bookmarks = storedBookmarks ? JSON.parse(storedBookmarks) : [];
-            // Si la noticia no está ya guardada, se agrega
-            if (!bookmarks.includes(newsId)) {
-            bookmarks.push(newsId);
-            await AsyncStorage.setItem('bookmark', JSON.stringify(bookmarks));
-            setBookmark(true);
-            alert('Noticia guardada con éxito');
-            }
+        const stored = await AsyncStorage.getItem(BOOKMARK_KEY);
+        return stored ? JSON.parse(stored) as string[] : [];
         } catch (error) {
-            console.error('Error guardando el bookmark:', error);
+        console.error('Error al leer bookmarks:', error);
+        return [];
         }
-        };
-    
-        const removeBookmark = async (newsId: string) => {
+    }, []);
+
+    const checkBookmark = useCallback(async (newsId: string) => {
+        const bookmarks = await getBookmarks();
+        setBookmark(bookmarks.includes(newsId));
+    }, [getBookmarks]);
+
+    const updateBookmarkStorage = useCallback(async (bookmarks: string[]) => {
         try {
-            const storedBookmarks = await AsyncStorage.getItem('bookmark');
-            if (storedBookmarks) {
-            const bookmarks = JSON.parse(storedBookmarks);
-            const updatedBookmarks = bookmarks.filter((id: string) => id !== newsId);
-            await AsyncStorage.setItem('bookmark', JSON.stringify(updatedBookmarks));
-            setBookmark(false);
-            alert('Noticia eliminada de favoritos');
-            }
+        await AsyncStorage.setItem(BOOKMARK_KEY, JSON.stringify(bookmarks));
         } catch (error) {
-            console.error('Error al eliminar el bookmark:', error);
+        console.error('Error al actualizar bookmarks:', error);
         }
-        };
-    
-        // Verifica si la noticia ya está en favoritos y actualiza el estado
-        const renderBookmark = async (newsId: string) => {
-        try {
-            const token = await AsyncStorage.getItem('bookmark');
-            const res = token ? JSON.parse(token) : null;
-            if (res !== null) {
-            const found = res.find((value: string) => value === newsId);
-            setBookmark(found != null);
-            } else {
-            setBookmark(false);
-            }
-        } catch (error) {
-            console.error('Error al leer el bookmark:', error);
+    }, []);
+
+    const toggleBookmark = useCallback(async (newsId: string) => {
+        const bookmarks = await getBookmarks();
+        if (bookmarks.includes(newsId)) {
+        const updated = bookmarks.filter((id) => id !== newsId);
+        await updateBookmarkStorage(updated);
+        setBookmark(false);
+        Alert.alert('Eliminado', 'Noticia eliminada de favoritos');
+        } else {
+        bookmarks.push(newsId);
+        await updateBookmarkStorage(bookmarks);
+        setBookmark(true);
+        Alert.alert('Guardado', 'Noticia guardada con éxito');
         }
-        };
-    
-        // Actualizamos el header cuando se carguen las noticias y/o cambie el estado del bookmark
-        useLayoutEffect(() => {
+    }, [getBookmarks, updateBookmarkStorage]);
+
+    useEffect(() => {
+        fetchNews();
+    }, [fetchNews]);
+
+    useEffect(() => {
+        if (!isLoading && news.length > 0) {
+        checkBookmark(news[0].article_id);
+        }
+    }, [isLoading, news, checkBookmark]);
+
+    useLayoutEffect(() => {
         navigation.setOptions({
-            title: 'Detalle de la noticia',
-            headerLeft: () => (
+        title: 'Detalle de la noticia',
+        headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={25} />
+            <Ionicons name="arrow-back" size={25} color={Colors.black} />
             </TouchableOpacity>
-            ),
-            headerRight: () => (
+        ),
+        headerRight: () => (
             <TouchableOpacity
-                onPress={() => {
+            onPress={() => {
                 if (news.length > 0) {
-                    const articleId = news[0].article_id;
-                    bookmark
-                    ? removeBookmark(articleId)
-                    : saveBookmark(articleId);
+                toggleBookmark(news[0].article_id);
                 }
-                }}
-                disabled={news.length === 0} // Se deshabilita si aún no hay noticias
+            }}
+            disabled={news.length === 0}
             >
-                <Ionicons
+            <Ionicons
                 name={bookmark ? 'heart' : 'heart-outline'}
                 size={25}
                 color={bookmark ? 'red' : Colors.black}
-                />
-            </TouchableOpacity>
-            ),
-        });
-        }, [navigation, news, bookmark]);
-    
-        return (
-        <>
-            <Stack.Screen
-            options={{
-                title: 'Detalle de la noticia',
-            }}
             />
-            {isLoading ? (
-            <Loading size="large" />
-            ) : (
-            <ScrollView
-                contentContainerStyle={styles.contentContainer}
-                style={styles.container}
-            >
-                <Text style={styles.title}>{news[0].title}</Text>
-                <View style={styles.newsInfoWrapper}>
-                <Text style={styles.newsInfo}>
-                    {Moment(news[0].pubDate).format('MMMM DD, hh:mm a')}
-                </Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Image
-                    source={{ uri: news[0].source_icon }}
-                    style={styles.sourceIcon}
-                    />
-                    <Text style={[styles.newsInfo, { marginLeft: 5 }]}>
-                    {news[0].source_name}
-                    </Text>
-                </View>
-                </View>
-                <Image
-                source={{ uri: news[0].image_url }}
-                style={styles.newsImg}
-                />
-                {news[0].content ? (
-                <Text style={styles.newsContent}>{news[0].content}</Text>
-                ) : (
-                <Text style={styles.newsContent}>{news[0].description}</Text>
-                )}
-            </ScrollView>
-            )}
-        </>
+            </TouchableOpacity>
+        ),
+        });
+    }, [navigation, news, bookmark, toggleBookmark]);
+
+    if (isLoading) {
+        return <Loading size="large" />;
+    }
+
+    if (error) {
+        return (
+        <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Error: {error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={fetchNews}>
+            <Text style={styles.retryText}>Reintentar</Text>
+            </TouchableOpacity>
+        </View>
         );
-    };
-    export default NewsDetails;
+    }
+
+    if (!id || news.length === 0) {
+        return (
+        <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No hay noticias disponibles.</Text>
+        </View>
+        );
+    }
+
+    const currentNews = news[0];
+
+    return (
+        <>
+        <Stack.Screen options={{ title: 'Detalle de la noticia' }} />
+        <ScrollView contentContainerStyle={styles.contentContainer} style={styles.container}>
+            <Text style={styles.title}>{currentNews.title}</Text>
+            <View style={styles.newsInfoWrapper}>
+            <Text style={styles.newsInfo}>
+                {Moment(currentNews.pubDate).format('MMMM DD, hh:mm a')}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image source={{ uri: currentNews.source_icon }} style={styles.sourceIcon} />
+                <Text style={[styles.newsInfo, { marginLeft: 5 }]}>{currentNews.source_name}</Text>
+            </View>
+            </View>
+            <Image source={{ uri: currentNews.image_url }} style={styles.newsImg} />
+            <Text style={styles.newsContent}>
+            {currentNews.content ? currentNews.content : currentNews.description}
+            </Text>
+        </ScrollView>
+        </>
+    );
+};
+
+export default NewsDetails;
 
 const styles = StyleSheet.create({
     container: {
@@ -217,5 +207,34 @@ const styles = StyleSheet.create({
         width: 25,
         height: 25,
         borderRadius: 20,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyText: {
+        fontSize: 16,
+        color: Colors.darkGrey,
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    errorText: {
+        fontSize: 16,
+        color: 'red',
+        marginBottom: 10,
+    },
+    retryButton: {
+        backgroundColor: Colors.black,
+        padding: 10,
+        borderRadius: 5,
+    },
+    retryText: {
+        color: Colors.white,
+        fontSize: 14,
     },
 });
