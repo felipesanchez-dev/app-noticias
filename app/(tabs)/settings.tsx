@@ -1,12 +1,13 @@
-import { StyleSheet, Switch, Text, TouchableOpacity, View, Animated } from 'react-native';
+import { StyleSheet, Switch, Text, TouchableOpacity, View, Animated, Linking  } from 'react-native';
 import React, { useContext, useRef } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { ThemeContext } from '@/context/ThemeContext';
 
 const Page = () => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+  const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleToggle = () => {
@@ -25,21 +26,32 @@ const Page = () => {
     toggleTheme();
   };
 
+  const Acercade = () => {
+    Linking.openURL('https://github.com/felipesanchez-dev/app-noticias');
+  };
+
+  const ReportarBug = () => {
+    Linking.openURL('https://github.com/felipesanchez-dev/app-noticias/issues/new');
+  };
+  const PoliticasDePrivacidad = () => {
+    Linking.openURL('https://github.com/felipesanchez-dev/app-noticias/issues/new');
+  };
+
   return (
-    <>
-    <Stack.Screen
-  options={{
-    headerShown: true,
-    title: 'Ajustes',
-    headerStyle: {
-      backgroundColor: isDarkMode ? '#121212' : '#f2f2f2', 
-    },
-    headerTintColor: isDarkMode ? '#ffffff' : '#000000', 
-    headerTitleStyle: {
-      color: isDarkMode ? '#ffffff' : '#000000',
-    },
-  }}
-/>
+      <>
+      <Stack.Screen
+        options={{
+        headerShown: true,
+        title: 'Ajustes',
+        headerStyle: {
+          backgroundColor: isDarkMode ? '#121212' : '#f2f2f2', 
+        },
+        headerTintColor: isDarkMode ? '#ffffff' : '#000000', 
+        headerTitleStyle: {
+          color: isDarkMode ? '#ffffff' : '#000000',
+        },
+      }}
+    />
 
 
       <View style={[styles.container, isDarkMode && styles.containerDark]}>
@@ -47,23 +59,14 @@ const Page = () => {
           Ajustes generales
         </Text>
 
-        {/* Botón Acerca de */}
-        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+        {/* Botón Reportar un bug */}
+        <TouchableOpacity 
+          style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}
+          onPress={ReportarBug}>
           <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
-            Acerca de
+            Reportar un bug
           </Text>
-          <MaterialIcons
-            name="arrow-forward-ios"
-            size={18}
-            color={isDarkMode ? Colors.white : Colors.lightGrey}
-          />
-        </TouchableOpacity>
-
-        {/* Botón Enviar un comentario */}
-        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
-            Envía un comentario
-          </Text>
+          
           <MaterialIcons
             name="arrow-forward-ios"
             size={18}
@@ -72,7 +75,10 @@ const Page = () => {
         </TouchableOpacity>
 
         {/* Botón Políticas de privacidad */}
-        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+        <TouchableOpacity 
+          style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}
+          onPress={PoliticasDePrivacidad}
+          >
           <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
             Políticas de privacidad
           </Text>
@@ -84,7 +90,9 @@ const Page = () => {
         </TouchableOpacity>
 
         {/* Botón Condiciones de uso */}
-        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+        <TouchableOpacity 
+          style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}
+          >
           <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
             Condiciones de uso
           </Text>
@@ -96,7 +104,9 @@ const Page = () => {
         </TouchableOpacity>
 
         {/* Botón Modo Oscuro */}
-        <TouchableOpacity style={[styles.BtnDarkMode, isDarkMode && styles.itemBtnDark]} onPress={handleToggle}>
+        <TouchableOpacity 
+          style={[styles.BtnDarkMode, isDarkMode && styles.itemBtnDark]} onPress={handleToggle}
+          >
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
             <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
               Modo Oscuro
@@ -111,13 +121,16 @@ const Page = () => {
           />
         </TouchableOpacity>
 
-        {/* Botón Cerrar sesión */}
-        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, { color: "red" }, isDarkMode && styles.itemBtnTxtDark]}>
-            Cerrar sesión
+        {/* Botón Acerca de */}
+        <TouchableOpacity 
+          style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]} 
+          onPress={Acercade}
+          >
+          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
+            Acerca de
           </Text>
           <MaterialIcons
-            name="exit-to-app"
+            name="arrow-forward-ios"
             size={18}
             color={isDarkMode ? Colors.white : Colors.lightGrey}
           />
