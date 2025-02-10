@@ -1,10 +1,30 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import { StyleSheet, Switch, Text, TouchableOpacity, View, Animated } from 'react-native';
+import React, { useState, useRef } from 'react';
 import { Stack } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 
+type Props = {}
 const Page = () => {
+  const [isEnabled, setEnabled] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const toggleSwitch = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 1.1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    setEnabled((previousState) => !previousState);
+  };
+
   return (
     <>
       <Stack.Screen
@@ -41,14 +61,22 @@ const Page = () => {
         </TouchableOpacity>
 
         {/* Boton Modo oscuro */}
-        <TouchableOpacity style={styles.BtnDarkMode}>
-          <Text style={styles.itemBtnTxt}>Modo Oscuro</Text>
-          <MaterialIcons name="brightness-6" size={18} color={Colors.lightGrey} />
+        <TouchableOpacity style={styles.BtnDarkMode} onPress={toggleSwitch}>
+          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+            <Text style={styles.itemBtnTxt}>Modo Oscuro</Text>
+          </Animated.View>
+          <Switch 
+            trackColor={{false: '#767577', true: '#3e3e3e'}}
+            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor= '#3e3e3e'
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
         </TouchableOpacity>
 
         {/* Boton Cerrar sesión */}
         <TouchableOpacity style={styles.itemBtn}>
-          <Text style={styles.itemBtnTxt}>Cerrar sesión</Text>
+          <Text style={[styles.itemBtnTxt, { color: "red" }]}>Cerrar sesión</Text>
           <MaterialIcons name="exit-to-app" size={18} color={Colors.lightGrey} />
         </TouchableOpacity>
       </View>
