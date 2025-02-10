@@ -1,23 +1,16 @@
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-  FlatList,
-  Image,
-} from 'react-native';
-import React, { useState, useCallback, useEffect } from 'react';
-import SearchBar from '@/components/SearchBar';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, FlatList, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import CheckBox from '@/components/CheckBox';
+import SearchBar from '@/components/SearchBar';
 import { useNewsCategories } from '@/hooks/useNewsCategories';
 import { useNewsCountries } from '@/hooks/useNewsCountry';
 import { Link, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
+import { ThemeContext } from '@/context/ThemeContext'; // Importa el ThemeContext
 
 type NewsItem = {
   article_id: string;
@@ -43,6 +36,9 @@ const Page = () => {
   const [bookmarkNews, setBookmarkNews] = useState<NewsItem[]>([]);
   const [newsLoading, setNewsLoading] = useState<boolean>(false);
   const [newsError, setNewsError] = useState<string | null>(null);
+
+  // Obtener el estado de dark mode desde el contexto
+  const { isDarkMode } = useContext(ThemeContext);
 
   // Función para obtener los IDs guardados
   const fetchBookmarks = useCallback(async () => {
@@ -109,7 +105,7 @@ const Page = () => {
     <>
       <SearchBar withHorizontalPadding={false} setSearchQuery={setSearchQuery} />
 
-      <Text style={styles.title}>Categorías</Text>
+      <Text style={[styles.title, { color: isDarkMode ? Colors.white : Colors.black }]}>Categorías</Text>
       <View style={styles.listContainer}>
         {newsCategories.map((item) => (
           <CheckBox
@@ -121,7 +117,7 @@ const Page = () => {
         ))}
       </View>
 
-      <Text style={styles.title}>Países</Text>
+      <Text style={[styles.title, { color: isDarkMode ? Colors.white : Colors.black }]}>Países</Text>
       <View style={styles.listContainer}>
         {newsCountries.map((item, index) => (
           <CheckBox
@@ -149,10 +145,10 @@ const Page = () => {
         </TouchableOpacity>
       </Link>
 
-      <Text style={styles.title}>Noticias guardadas</Text>
+      <Text style={[styles.title, { color: isDarkMode ? Colors.white : Colors.black }]}>Noticias guardadas</Text>
 
       {(bookmarksLoading || newsLoading) && (
-        <ActivityIndicator size="large" color={Colors.tint} />
+        <ActivityIndicator size="large" color={isDarkMode ? Colors.white : Colors.tint} />
       )}
 
       {(bookmarkError || newsError) && (
@@ -167,36 +163,54 @@ const Page = () => {
       {bookmarkNews.length === 0 &&
         !(bookmarksLoading || newsLoading || bookmarkError || newsError) && (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No tienes noticias guardadas.</Text>
+              <Text style={[styles.emptyText, { color: isDarkMode ? 'white' : 'black' }]}>
+                  No tienes noticias guardadas.
+              </Text>
           </View>
-        )}
+    )}
+
     </>
   );
 
   return (
-    <View style={[styles.container, { paddingTop: safetop + 20 }]}>
+    <View style={[styles.container,
+      { paddingTop: safetop + 20,
+      backgroundColor: isDarkMode ? '#121212' : Colors.white }]}>
       <FlatList
-        data={bookmarkNews}
-        keyExtractor={(item) => item.article_id}
-        showsVerticalScrollIndicator={false}
-        ListHeaderComponent={ListHeader}
-        renderItem={({ item }) => (
-          <Link href={`/news/${item.article_id}`} asChild>
-            <TouchableOpacity style={styles.card}>
-              <Image
-                source={{ uri: item.image_url }}
-                style={styles.cardImage}
-                resizeMode="cover"
-              />
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardDescription} numberOfLines={2}>
-                {item.description || item.content}
-              </Text>
-            </TouchableOpacity>
-          </Link>
-        )}
-        ListFooterComponent={<View style={{ height: 20 }} />}
-      />
+  data={bookmarkNews}
+  keyExtractor={(item) => item.article_id}
+  showsVerticalScrollIndicator={false}
+  ListHeaderComponent={ListHeader}
+  renderItem={({ item }) => (
+    <Link href={`/news/${item.article_id}`} asChild>
+      <TouchableOpacity
+        style={[styles.card, { backgroundColor: isDarkMode ? 'red' : 'red' }]}
+      >
+        <Image
+          source={{ uri: item.image_url }}
+          style={styles.cardImage}
+          resizeMode="cover"
+        />
+        <Text
+          style={[styles.cardTitle, { color: isDarkMode ? '#fff' : Colors.black }]}
+        >
+          {item.title}
+        </Text>
+        <Text
+          style={[
+            styles.cardDescription,
+            { color: isDarkMode ? '#ccc' : Colors.darkGrey },
+          ]}
+          numberOfLines={2}
+        >
+          {item.description || item.content}
+        </Text>
+      </TouchableOpacity>
+    </Link>
+  )}
+  ListFooterComponent={<View style={{ height: 20 }} />}
+/>
+
     </View>
   );
 };
@@ -206,13 +220,11 @@ export default Page;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: '800',
-    color: Colors.black,
     marginBottom: 10,
     marginTop: 20,
   },
@@ -224,7 +236,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   searchBtn: {
-    backgroundColor: Colors.tint,
+    backgroundColor: "#333333",
     alignItems: 'center',
     padding: 14,
     borderRadius: 20,
@@ -235,10 +247,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  savedNewsContainer: {
-    marginTop: 30,
-  },
-  // Estilos de las tarjetas de noticias guardadas
   card: {
     backgroundColor: Colors.white,
     borderRadius: 10,
@@ -259,12 +267,10 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: Colors.black,
     marginBottom: 5,
   },
   cardDescription: {
     fontSize: 14,
-    color: Colors.darkGrey,
   },
   emptyContainer: {
     paddingVertical: 20,
@@ -272,7 +278,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Colors.darkGrey,
   },
   errorContainer: {
     paddingVertical: 20,
