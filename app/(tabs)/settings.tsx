@@ -34,7 +34,7 @@ const Page = () => {
     Linking.openURL('https://github.com/felipesanchez-dev/app-noticias/issues/new');
   };
   const PoliticasDePrivacidad = () => {
-    Linking.openURL('https://github.com/felipesanchez-dev/app-noticias/issues/new');
+    Linking.openURL('https://felipesanchez-dev.github.io/Politicas-de-privacidad-Noticias-GG/');
   };
 
   return (
@@ -81,20 +81,6 @@ const Page = () => {
           >
           <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
             Políticas de privacidad
-          </Text>
-          <MaterialIcons
-            name="arrow-forward-ios"
-            size={18}
-            color={isDarkMode ? Colors.white : Colors.lightGrey}
-          />
-        </TouchableOpacity>
-
-        {/* Botón Condiciones de uso */}
-        <TouchableOpacity 
-          style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}
-          >
-          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
-            Condiciones de uso
           </Text>
           <MaterialIcons
             name="arrow-forward-ios"
