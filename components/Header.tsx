@@ -19,7 +19,7 @@ const Header = () => {
             Hola
           </Text>
           <Text style={[styles.userName, isDarkMode && styles.userNameDark]}>
-            Pipedev!
+            Usuario!
           </Text>
         </View>
       </View>
