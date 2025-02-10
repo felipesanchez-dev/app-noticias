@@ -1,15 +1,16 @@
+// app/(tabs)/settings.tsx
 import { StyleSheet, Switch, Text, TouchableOpacity, View, Animated } from 'react-native';
-import React, { useState, useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Stack } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
+import { ThemeContext } from '@/context/ThemeContext';
 
-type Props = {}
 const Page = () => {
-  const [isEnabled, setEnabled] = useState(false);
+  const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const toggleSwitch = () => {
+  const handleToggle = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 1.1,
@@ -22,7 +23,7 @@ const Page = () => {
         useNativeDriver: true,
       }),
     ]).start();
-    setEnabled((previousState) => !previousState);
+    toggleTheme();
   };
 
   return (
@@ -33,51 +34,85 @@ const Page = () => {
           title: 'Ajustes',
         }}
       />
-      <View style={[styles.container, isEnabled && styles.containerDark]}>
-        <Text style={[styles.heading, isEnabled && styles.headingDark]}>Ajustes generales</Text>
+      <View style={[styles.container, isDarkMode && styles.containerDark]}>
+        <Text style={[styles.heading, isDarkMode && styles.headingDark]}>
+          Ajustes generales
+        </Text>
 
-        {/* Boton Acerca de */}
-        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Acerca de</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
-        </TouchableOpacity>
-
-        {/* Boton Enviar un comentario */}
-        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Envia un comentario</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
-        </TouchableOpacity>
-
-        {/* Boton Politicas de privacidad */}
-        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Políticas de privacidad</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
-        </TouchableOpacity>
-
-        {/* Boton Condiciones de uso */}
-        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Condiciones de uso</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
-        </TouchableOpacity>
-
-        {/* Boton Modo oscuro */}
-        <TouchableOpacity style={[styles.BtnDarkMode, isEnabled && styles.itemBtnDark]} onPress={toggleSwitch}>
-          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Modo Oscuro</Text>
-          </Animated.View>
-          <Switch 
-            trackColor={{false: '#767577', true: '#3e3e3e'}}
-            thumbColor={isEnabled ? '#f5dd4b' : '#f4f3f4'}
-            ios_backgroundColor= '#3e3e3e'
-            onValueChange={toggleSwitch}
-            value={isEnabled}
+        {/* Botón Acerca de */}
+        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
+            Acerca de
+          </Text>
+          <MaterialIcons
+            name="arrow-forward-ios"
+            size={18}
+            color={isDarkMode ? Colors.white : Colors.lightGrey}
           />
         </TouchableOpacity>
 
-        {/* Boton Cerrar sesión */}
-        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
-          <Text style={[styles.itemBtnTxt, { color: "red" }, isEnabled && styles.itemBtnTxtDark]}>Cerrar sesión</Text>
-          <MaterialIcons name="exit-to-app" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
+        {/* Botón Enviar un comentario */}
+        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
+            Envía un comentario
+          </Text>
+          <MaterialIcons
+            name="arrow-forward-ios"
+            size={18}
+            color={isDarkMode ? Colors.white : Colors.lightGrey}
+          />
+        </TouchableOpacity>
+
+        {/* Botón Políticas de privacidad */}
+        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
+            Políticas de privacidad
+          </Text>
+          <MaterialIcons
+            name="arrow-forward-ios"
+            size={18}
+            color={isDarkMode ? Colors.white : Colors.lightGrey}
+          />
+        </TouchableOpacity>
+
+        {/* Botón Condiciones de uso */}
+        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
+            Condiciones de uso
+          </Text>
+          <MaterialIcons
+            name="arrow-forward-ios"
+            size={18}
+            color={isDarkMode ? Colors.white : Colors.lightGrey}
+          />
+        </TouchableOpacity>
+
+        {/* Botón Modo Oscuro */}
+        <TouchableOpacity style={[styles.BtnDarkMode, isDarkMode && styles.itemBtnDark]} onPress={handleToggle}>
+          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+            <Text style={[styles.itemBtnTxt, isDarkMode && styles.itemBtnTxtDark]}>
+              Modo Oscuro
+            </Text>
+          </Animated.View>
+          <Switch 
+            trackColor={{ false: '#767577', true: '#3e3e3e' }}
+            thumbColor={isDarkMode ? '#f5dd4b' : '#f4f3f4'}
+            ios_backgroundColor='#3e3e3e'
+            onValueChange={handleToggle}
+            value={isDarkMode}
+          />
+        </TouchableOpacity>
+
+        {/* Botón Cerrar sesión */}
+        <TouchableOpacity style={[styles.itemBtn, isDarkMode && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, { color: "red" }, isDarkMode && styles.itemBtnTxtDark]}>
+            Cerrar sesión
+          </Text>
+          <MaterialIcons
+            name="exit-to-app"
+            size={18}
+            color={isDarkMode ? Colors.white : Colors.lightGrey}
+          />
         </TouchableOpacity>
       </View>
     </>

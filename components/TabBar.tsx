@@ -6,12 +6,15 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Colors } from "@/constants/Colors";
+import { ThemeContext } from "@/context/ThemeContext";
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+  const { isDarkMode } = useContext(ThemeContext);
   const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
   const buttonWidth = dimensions.width / state.routes.length;
+
   const onTabbarLayout = (e: LayoutChangeEvent) => {
     setDimensions({
       height: e.nativeEvent.layout.height,
@@ -27,7 +30,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   });
 
   return (
-    <View onLayout={onTabbarLayout} style={styles.tabbar}>
+    <View onLayout={onTabbarLayout} style={[styles.tabbar, isDarkMode && styles.tabbarDark]}>
       <Animated.View
         style={[
           animatedStyle,
@@ -44,12 +47,13 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
-          options.tabBarLabel !== undefined
+          typeof options.tabBarLabel === 'string'
             ? options.tabBarLabel
             : options.title !== undefined
             ? options.title
             : route.name;
         const isFocused = state.index === index;
+
         const onPress = () => {
           tabPositionX.value = withTiming(buttonWidth * index, {
             duration: 200,
@@ -63,19 +67,21 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             navigation.navigate(route.name, route.params);
           }
         };
+
         const onLongPress = () => {
           navigation.emit({
             type: "tabLongPress",
             target: route.key,
           });
         };
+
         return (
           <TabBarButton
             key={route.name}
             onPress={onPress}
             onLongPress={onLongPress}
             isFocused={isFocused}
-            routeName={route.name}
+            routeName={route.name as "index" | "discover" | "saved" | "settings"}
             label={label}
           />
         );
@@ -90,5 +96,8 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 40,
     backgroundColor: Colors.white,
+  },
+  tabbarDark: {
+    backgroundColor: "#333333",
   },
 });

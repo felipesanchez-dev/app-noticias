@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, GestureResponderEvent } from "react-native";
 import React, { useEffect } from "react";
-import { icon } from "@/constants/Icons";
+import { icon, } from "@/constants/Icons";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -16,10 +16,10 @@ const TabBarButton = ({
   routeName,
   label,
 }: {
-  onPress: Function;
-  onLongPress: Function;
+  onPress: (event: GestureResponderEvent) => void;
+  onLongPress: (event: GestureResponderEvent) => void;
   isFocused: boolean;
-  routeName: string;
+  routeName: keyof typeof icon;
   label: string;
 }) => {
   const opacity = useSharedValue(0);
