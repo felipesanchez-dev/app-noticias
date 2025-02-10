@@ -33,37 +33,37 @@ const Page = () => {
           title: 'Ajustes',
         }}
       />
-      <View style={styles.container}>
-        <Text style={styles.heading}>Ajustes generales</Text>
+      <View style={[styles.container, isEnabled && styles.containerDark]}>
+        <Text style={[styles.heading, isEnabled && styles.headingDark]}>Ajustes generales</Text>
 
         {/* Boton Acerca de */}
-        <TouchableOpacity style={styles.itemBtn}>
-          <Text style={styles.itemBtnTxt}>Acerca de</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={Colors.lightGrey} />
+        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Acerca de</Text>
+          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
         </TouchableOpacity>
 
         {/* Boton Enviar un comentario */}
-        <TouchableOpacity style={styles.itemBtn}>
-          <Text style={styles.itemBtnTxt}>Envia un comentario</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={Colors.lightGrey} />
+        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Envia un comentario</Text>
+          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
         </TouchableOpacity>
 
         {/* Boton Politicas de privacidad */}
-        <TouchableOpacity style={styles.itemBtn}>
-          <Text style={styles.itemBtnTxt}>Políticas de privacidad</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={Colors.lightGrey} />
+        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Políticas de privacidad</Text>
+          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
         </TouchableOpacity>
 
         {/* Boton Condiciones de uso */}
-        <TouchableOpacity style={styles.itemBtn}>
-          <Text style={styles.itemBtnTxt}>Condiciones de uso</Text>
-          <MaterialIcons name="arrow-forward-ios" size={18} color={Colors.lightGrey} />
+        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Condiciones de uso</Text>
+          <MaterialIcons name="arrow-forward-ios" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
         </TouchableOpacity>
 
         {/* Boton Modo oscuro */}
-        <TouchableOpacity style={styles.BtnDarkMode} onPress={toggleSwitch}>
+        <TouchableOpacity style={[styles.BtnDarkMode, isEnabled && styles.itemBtnDark]} onPress={toggleSwitch}>
           <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-            <Text style={styles.itemBtnTxt}>Modo Oscuro</Text>
+            <Text style={[styles.itemBtnTxt, isEnabled && styles.itemBtnTxtDark]}>Modo Oscuro</Text>
           </Animated.View>
           <Switch 
             trackColor={{false: '#767577', true: '#3e3e3e'}}
@@ -75,9 +75,9 @@ const Page = () => {
         </TouchableOpacity>
 
         {/* Boton Cerrar sesión */}
-        <TouchableOpacity style={styles.itemBtn}>
-          <Text style={[styles.itemBtnTxt, { color: "red" }]}>Cerrar sesión</Text>
-          <MaterialIcons name="exit-to-app" size={18} color={Colors.lightGrey} />
+        <TouchableOpacity style={[styles.itemBtn, isEnabled && styles.itemBtnDark]}>
+          <Text style={[styles.itemBtnTxt, { color: "red" }, isEnabled && styles.itemBtnTxtDark]}>Cerrar sesión</Text>
+          <MaterialIcons name="exit-to-app" size={18} color={isEnabled ? Colors.white : Colors.lightGrey} />
         </TouchableOpacity>
       </View>
     </>
@@ -92,11 +92,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     padding: 20,
   },
+  containerDark: {
+    backgroundColor: '#121212',
+  },
   heading: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     color: Colors.black,
+  },
+  headingDark: {
+    color: Colors.white,
   },
   BtnDarkMode: {
     flexDirection: 'row',
@@ -128,9 +134,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  itemBtnDark: {
+    backgroundColor: '#333333',
+  },
   itemBtnTxt: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.black,
+  },
+  itemBtnTxtDark: {
+    color: Colors.white,
   },
 });
