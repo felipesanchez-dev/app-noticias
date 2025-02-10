@@ -1,17 +1,19 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, } from 'react-native'
-import React, { useRef, useState } from 'react'
-import { Colors } from '@/constants/Colors'
-import newsCategoryList from '@/constants/Categories'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useState, useContext } from 'react';
+import { Colors } from '@/constants/Colors';
+import newsCategoryList from '@/constants/Categories';
+import { ThemeContext } from '@/context/ThemeContext';
 
 type Props = {
     onCategoryChanged: (category: string) => void;
-}
+};
 
-const Categories = ({onCategoryChanged}: Props) => {
-    const scrollRef = useRef<ScrollView>(null)
+const Categories = ({ onCategoryChanged }: Props) => {
+    const { isDarkMode } = useContext(ThemeContext);
+    const scrollRef = useRef<ScrollView>(null);
     const itemRef = useRef<TouchableOpacity[] | null[]>([]);
     const [activeIndex, setActiveIndex] = useState(0);
-    
+
     const handleSelectCategory = (index: number) => {
         const selected = itemRef.current[index];
         setActiveIndex(index);
@@ -19,36 +21,49 @@ const Categories = ({onCategoryChanged}: Props) => {
             scrollRef.current?.getScrollableNode(),
             (x) => {
                 scrollRef.current?.scrollTo({ x: x - 20, y: 0, animated: true });
-            });
-            onCategoryChanged(newsCategoryList[index].slug);
+            }
+        );
+        onCategoryChanged(newsCategoryList[index].slug);
     };
-    
+
     return (
         <View>
-            <Text style={styles.title}>En Boca de Todos</Text>
+            <Text style={[styles.title, { color: isDarkMode ? Colors.white : Colors.black }]}>En Boca de Todos</Text>
             <ScrollView
-            ref={scrollRef}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.itemsWrapper}
+                ref={scrollRef}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.itemsWrapper}
             >
                 {newsCategoryList.map((item, index) => (
-                    <TouchableOpacity 
-                        ref={(el) => itemRef.current[index] = el}
-                        key={index} 
-                        style={[styles.item, activeIndex ===  index && styles.itemActive]}
+                    <TouchableOpacity
+                        ref={(el) => (itemRef.current[index] = el)}
+                        key={index}
+                        style={[
+                            styles.item,
+                            { borderColor: isDarkMode ? Colors.lightGrey : Colors.darkGrey },
+                            activeIndex === index && { backgroundColor: Colors.tint, borderColor: Colors.tint },
+                        ]}
                         onPress={() => handleSelectCategory(index)}
+                    >
+                        <Text
+                            style={[
+                                styles.itemText,
+                                { color: isDarkMode ? Colors.lightGrey : Colors.darkGrey },
+                                activeIndex === index && { color: Colors.white },
+                            ]}
                         >
-                        <Text style={[styles.itemText, activeIndex === index && styles.itemTextActive]}>
                             {item.title}
-                            </Text>
+                        </Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
         </View>
-    )
-}
-export default Categories
+    );
+};
+
+export default Categories;
+
 const styles = StyleSheet.create({
     itemsWrapper: {
         gap: 12,
@@ -58,7 +73,6 @@ const styles = StyleSheet.create({
     },
     item: {
         borderWidth: 1,
-        borderColor: Colors.darkGrey,
         paddingVertical: 10,
         paddingHorizontal: 16,
         borderRadius: 20,
@@ -66,22 +80,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: '600',
-        color: Colors.black,
         marginBottom: 10,
         marginLeft: 20,
     },
     itemText: {
         fontSize: 14,
         fontWeight: '800',
-        color: Colors.darkGrey,
         letterSpacing: 0.5,
     },
-    itemActive: {
-        backgroundColor: Colors.tint,
-        borderColor: Colors.tint,
-    },
-    itemTextActive: {
-        fontWeight: '900',
-        color: Colors.white,
-    }
-})
+});

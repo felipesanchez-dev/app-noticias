@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   containerDark: {
-    backgroundColor: "#333333",
+    backgroundColor: "#121212",
   },
   userImg: {
     width: 50,

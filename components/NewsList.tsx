@@ -1,22 +1,24 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useContext } from 'react';
 import { NewsDataType } from '@/types';
 import { Colors } from '@/constants/Colors';
 import Loading from '@/components/Loading';
 import { Link } from 'expo-router';
+import { ThemeContext } from '@/context/ThemeContext';
 
 type Props = {
     newList: NewsDataType[];
-    item: any;
 };
 
 const NewsList = ({ newList }: Props) => {
+    const { isDarkMode } = useContext(ThemeContext);
+
     return (
         <View style={styles.container}>
             {newList.length === 0 ? (
                 <Loading size="large" />
             ) : (
-                newList.map((item, index) => (
+                newList.map((item) => (
                     <Link
                         key={item.article_id}
                         href={{
@@ -26,14 +28,25 @@ const NewsList = ({ newList }: Props) => {
                         asChild
                     >
                         <TouchableOpacity>
-                            <View style={styles.itemContainer}>
+                            <View
+                                style={[
+                                    styles.itemContainer,
+                                    { backgroundColor: isDarkMode ? '#121212' : Colors.white },
+                                ]}
+                            >
                                 <Image source={{ uri: item.image_url }} style={styles.itemImage} />
                                 <View style={styles.itemInfo}>
-                                    <Text style={styles.itemCategory}>{item.category}</Text>
-                                    <Text style={styles.itemTitle}>{item.title}</Text>
+                                    <Text style={[styles.itemCategory, { color: isDarkMode ? Colors.lightGrey : Colors.darkGrey }]}>
+                                        {item.category}
+                                    </Text>
+                                    <Text style={[styles.itemTitle, { color: isDarkMode ? Colors.white : Colors.black }]}>
+                                        {item.title}
+                                    </Text>
                                     <View style={styles.itemSourceInfo}>
                                         <Image source={{ uri: item.source_icon }} style={styles.itemSourceImg} />
-                                        <Text style={styles.itemSourceName}>{item.source_name}</Text>
+                                        <Text style={[styles.itemSourceName, { color: isDarkMode ? Colors.lightGrey : Colors.darkGrey }]}>
+                                            {item.source_name}
+                                        </Text>
                                     </View>
                                 </View>
                             </View>
@@ -58,6 +71,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         flex: 1,
         gap: 10,
+        borderRadius: 12,
+        padding: 10,
     },
     itemImage: {
         width: 90,
@@ -72,13 +87,12 @@ const styles = StyleSheet.create({
     },
     itemCategory: {
         fontSize: 14,
-        color: Colors.darkGrey,
         textTransform: 'capitalize',
+        fontWeight: '900'
     },
     itemTitle: {
         fontSize: 16,
         fontWeight: '900',
-        color: Colors.black,
     },
     itemSourceInfo: {
         flexDirection: 'row',
@@ -92,7 +106,6 @@ const styles = StyleSheet.create({
     },
     itemSourceName: {
         fontSize: 14,
-        fontWeight: '400',
-        color: Colors.darkGrey,
+        fontWeight: '900',
     },
 });
