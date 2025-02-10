@@ -1,4 +1,3 @@
-// app/(tabs)/settings.tsx
 import { StyleSheet, Switch, Text, TouchableOpacity, View, Animated } from 'react-native';
 import React, { useContext, useRef } from 'react';
 import { Stack } from 'expo-router';
@@ -28,12 +27,21 @@ const Page = () => {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          title: 'Ajustes',
-        }}
-      />
+    <Stack.Screen
+  options={{
+    headerShown: true,
+    title: 'Ajustes',
+    headerStyle: {
+      backgroundColor: isDarkMode ? '#121212' : '#f2f2f2', 
+    },
+    headerTintColor: isDarkMode ? '#ffffff' : '#000000', 
+    headerTitleStyle: {
+      color: isDarkMode ? '#ffffff' : '#000000',
+    },
+  }}
+/>
+
+
       <View style={[styles.container, isDarkMode && styles.containerDark]}>
         <Text style={[styles.heading, isDarkMode && styles.headingDark]}>
           Ajustes generales
