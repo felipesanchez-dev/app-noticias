@@ -1,24 +1,19 @@
 {
-  "cli": {
-    "version": ">= 15.0.9",
-    "appVersionSource": "remote"
-  },
   "build": {
     "development": {
-      "developmentClient": true,
-      "distribution": "internal"
+      "environment": "development"
     },
     "preview": {
-      "distribution": "internal"
-    },
-    "production": {
-      "autoIncrement": true,
+      "environment": "preview",
       "android": {
         "buildType": "apk"
       }
+    },
+    "production": {
+      "environment": "production"
+    },
+    "my-profile": {
+      "environment": "production"
     }
-  },
-  "submit": {
-    "production": {}
   }
 }
