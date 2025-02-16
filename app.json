@@ -46,7 +46,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/9656ab3b-b786-4aeb-96d5-d17f63f0285a"
+      "url": "#" // Centro de actualicaciones de la app con expo
     }
   }
 }
