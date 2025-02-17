@@ -38,7 +38,7 @@ Diseño fácil de usar y estéticamente atractivo, creado con **Tailwind CSS**.
 ```bash
 root/
 ├── apk/
-│   └── NoticiasGG.apk //Ejecutable
+│   └── NoticiasGG.apk 
 ├── app/
 │   ├── index.tsx
 │   ├── _layout.tsx
