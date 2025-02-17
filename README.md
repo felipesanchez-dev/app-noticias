@@ -18,7 +18,6 @@ Muestra una lista de noticias, incluyendo:
 Permite filtrar las noticias por categorías como:
 - **Negocios**
 - **Entretenimiento**
-- **Salud**
 - **Tecnología**
 - **Deportes**
 - **Ciencia**
