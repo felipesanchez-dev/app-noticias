@@ -1,4 +1,4 @@
-# 📰 Proyecto: Noticias GG 2/15
+# 📰 Proyecto: Noticias GG 2
 
 Este proyecto es una aplicación de noticias desarrollada con **React Native** y **Expo**. Permite a los usuarios acceder a noticias actualizadas de diferentes categorías y fuentes, usando la **API NewsData.io**.
 
@@ -112,4 +112,4 @@ Si tienes preguntas, ideas o simplemente quieres compartir tu experiencia desarr
 **Sitio Web:** [Mi portafolio](https://pipedev.vercel.app/)  
 
 --- 
-**⚠️ Nota importante:** Este es un proyecto es parte del reto **Reto: 15 Proyectos con APIs 🚀:** [[Link del repositorio]](https://github.com/felipesanchez-dev/RN-15-Projects-APIs-Challenge), por lo que **no se aceptarán contribuciones externas** (pull requests o commits).  
+**⚠️ Nota importante:** Este es un proyecto es parte del reto **Reto: Proyectos con APIs 🚀:** [[Link del repositorio]](https://github.com/felipesanchez-dev/RN-15-Projects-APIs-Challenge), por lo que **no se aceptarán contribuciones externas** (pull requests o commits).  
