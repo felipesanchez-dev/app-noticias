@@ -109,7 +109,7 @@ Si tienes preguntas, ideas o simplemente quieres compartir tu experiencia desarr
 
 **Correo:** [jfelipe9.121@gmail.com](mailto:jfelipe9.121@gmail.com)  
 **LinkedIn:** [felipereyessa](https://www.linkedin.com/in/felipereyessa)  
-**Sitio Web:** [Mi portafolio](https://pipedev.vercel.app/)  
+**Sitio Web:** [Mi portafolio]([https://pipedev.vercel.app/](https://felipesanchezdev.site))  
 
 --- 
 **⚠️ Nota importante:** Este es un proyecto es parte del reto **Reto: Proyectos con APIs 🚀:** [[Link del repositorio]](https://github.com/felipesanchez-dev/RN-15-Projects-APIs-Challenge), por lo que **no se aceptarán contribuciones externas** (pull requests o commits).  
